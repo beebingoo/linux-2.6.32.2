@@ -97,6 +97,15 @@ config DEVKMEM
 	  kind of kernel debugging operations.
 	  When in doubt, say "N".
 
+config MINI2440_ADC
+	bool "ADC driver for FriendlyARM Mini2440 development boards"
+	depends on MACH_MINI2440
+	default y if MACH_MINI2440
+	help
+	  this is ADC driver for FriendlyARM Mini2440 development boards
+	  Notes: the touch-screen-driver required this option
+
+
 config BFIN_JTAG_COMM
 	tristate "Blackfin JTAG Communication"
 	depends on BLACKFIN
