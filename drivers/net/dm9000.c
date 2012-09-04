@@ -149,6 +149,8 @@ static inline board_info_t *to_dm9000_board(struct net_device *dev)
 	return netdev_priv(dev);
 }
 
+
+
 /* DM9000 network board routine ---------------------------- */
 
 static void
