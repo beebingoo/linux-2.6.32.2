@@ -40,6 +40,10 @@
 
 #include "dm9000.h"
 
+#if defined(CONFIG_ARCH_S3C2410)
+#include <mach/regs-mem.h>
+#endif
+
 /* Board/System/Debug information/definition ---------------- */
 
 #define DM9000_PHY		0x40	/* PHY address 0x01 */
@@ -144,6 +148,8 @@ static inline board_info_t *to_dm9000_board(struct net_device *dev)
 {
 	return netdev_priv(dev);
 }
+
+
 
 /* DM9000 network board routine ---------------------------- */
 
@@ -1552,6 +1558,12 @@ static struct platform_driver dm9000_driver = {
 static int __init
 dm9000_init(void)
 {
+#if defined(CONFIG_ARCH_S3C2410)
+	unsigned int oldval_bwscon = *(volatile unsigned int *)S3C2410_BWSCON;
+	unsigned int oldval_bankcon4 = *(volatile unsigned int *)S3C2410_BANKCON4;
+	*((volatile unsigned int *)S3C2410_BWSCON) = (oldval_bwscon & ~(3<<16)) | S3C2410_BWSCON_DW4_16 | S3C2410_BWSCON_WS4 | S3C2410_BWSCON_ST4;
+	*((volatile unsigned int *)S3C2410_BANKCON4) = 0x1f7c;
+#endif
 	printk(KERN_INFO "%s Ethernet Driver, V%s\n", CARDNAME, DRV_VERSION);
 
 	return platform_driver_register(&dm9000_driver);
