@@ -44,8 +44,6 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
-#include <linux/dm9000.h>
-
 #include <plat/s3c2410.h>
 #include <plat/s3c2440.h>
 #include <plat/clock.h>
@@ -59,6 +57,9 @@
 
 /* DM9000AEP 10/100 ethernet controller */
 #define MACH_MINI2440_DM9K_BASE (S3C2410_CS4 + 0x300)
+
+//在文件首部添加头文件
+#include <sound/s3c24xx_uda134x.h>
 
 // NEC 3.5”LCD 的配置和参数设置 
 #ifdef CONFIG_FB_S3C2410_N240320
@@ -132,48 +133,7 @@ S3C2410_LCDCON5_INVVCLK | S3C2410_LCDCON5_HWSWP )
 #define LCD_CON5 (S3C2410_LCDCON5_FRM565 | S3C2410_LCDCON5_HWSWP)
 #endif
 
-/* DM9000AEP 10/100 ethernet controller */
-#define MACH_MINI2440_DM9K_BASE (S3C2410_CS4 + 0x300)
-
-/**** The new DM9000 modify for mini2440*****************/
-static struct resource mini2440_dm9k_resource[] = {
-	[0] = {
-		.start = MACH_MINI2440_DM9K_BASE,
-		.end = MACH_MINI2440_DM9K_BASE + 3,
-		.flags = IORESOURCE_MEM
-	},
-	[1] = {
-		.start = MACH_MINI2440_DM9K_BASE + 4,
-		.end = MACH_MINI2440_DM9K_BASE + 7,
-		.flags = IORESOURCE_MEM
-	},
-	[2] = {
-		.start = IRQ_EINT7,
-		.end = IRQ_EINT7,
-		.flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHEDGE,
-	}
-};
-/*
-* * * The DM9000 has no eeprom, and it's MAC address is set by
-* * * the bootloader before starting the kernel.
-*
-*
-*/
-static struct dm9000_plat_data mini2440_dm9k_pdata = {
-	.flags = (DM9000_PLATF_16BITONLY | DM9000_PLATF_NO_EEPROM),
-};
-
-static struct platform_device mini2440_device_eth = {
-	.name	= "dm9000",
-	.id	= -1,
-	.num_resources = ARRAY_SIZE(mini2440_dm9k_resource),
-	.resource	= mini2440_dm9k_resource,
-	.dev	={
-		.platform_data = &mini2440_dm9k_pdata,
-	},
-};
-
-static struct map_desc mini2400_iodesc[] __initdata = {
+static struct map_desc mini2440_iodesc[] __initdata = {
 	/* ISA IO Space map (memory space selected by A24) */
 
 	{
@@ -354,6 +314,22 @@ static struct s3c2410fb_mach_info mini2440_fb_info __initdata = {
 };
 //#endif
 
+//在 LCD 平台设备后面添加 UDA1341 设备结构
+static struct s3c24xx_uda134x_platform_data s3c24xx_uda134x_data = {
+	.l3_clk = S3C2410_GPB(4),
+	.l3_data = S3C2410_GPB(3),
+	.l3_mode = S3C2410_GPB(2),
+	.model = UDA134X_UDA1341,
+};
+
+static struct platform_device s3c24xx_uda134x = {
+	.name = "s3c24xx_uda134x",
+	.dev = {
+		.platform_data	= &s3c24xx_uda134x_data,
+	}
+};
+
+
 static struct platform_device *mini2440_devices[] __initdata = {
 	&s3c_device_usb,
 	&s3c_device_lcd,
@@ -362,6 +338,7 @@ static struct platform_device *mini2440_devices[] __initdata = {
 	&s3c_device_iis,
 	&s3c_device_nand,
 	&s3c_device_rtc,
+	&s3c24xx_uda134x,
 	&mini2440_device_eth,
 };
 

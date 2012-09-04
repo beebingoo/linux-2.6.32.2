@@ -1,1 +1,1 @@
-cmd_net/wireless/built-in.o :=  arm-linux-ld -EL    -r -o net/wireless/built-in.o net/wireless/wext.o 
+cmd_net/wireless/built-in.o :=  arm-linux-ld -EL    -r -o net/wireless/built-in.o net/wireless/wext.o net/wireless/lib80211.o net/wireless/lib80211_crypt_wep.o net/wireless/lib80211_crypt_ccmp.o net/wireless/lib80211_crypt_tkip.o 

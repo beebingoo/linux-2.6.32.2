@@ -3069,6 +3069,9 @@ deps_arch/arm/mach-s3c2440/mach-mini2440.o := \
   arch/arm/plat-s3c/include/plat/nand.h \
   arch/arm/plat-s3c24xx/include/plat/common-smdk.h \
   include/linux/dm9000.h \
+  include/sound/s3c24xx_uda134x.h \
+  include/sound/uda134x.h \
+  include/sound/l3.h \
 
 arch/arm/mach-s3c2440/mach-mini2440.o: $(deps_arch/arm/mach-s3c2440/mach-mini2440.o)
 
